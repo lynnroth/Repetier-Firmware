@@ -482,6 +482,7 @@ SET_OUTPUT(ANALYZER_CH7);
   printer_state.opsMinDistance = OPS_MIN_DISTANCE;
   printer_state.opsRetractDistance = OPS_RETRACT_DISTANCE;
   printer_state.opsRetractBacklash = OPS_RETRACT_BACKLASH;
+  printer_state.opsMoveAfter = OPS_MOVE_AFTER;
   printer_state.filamentRetracted = false;
 #endif
   printer_state.feedrate = 50; ///< Current feedrate in mm/s.
@@ -519,6 +520,9 @@ SET_OUTPUT(ANALYZER_CH7);
   printer_state.backlashZ = Z_BACKLASH;
   printer_state.backlashDir = 0;
 #endif  
+#if USE_OPS==1 || defined(USE_ADVANCE)
+  printer_state.extruderStepsNeeded = 0;
+#endif
   epr_init_baudrate();
   RFSERIAL.begin(baudrate);
   out.println_P(PSTR("start"));
@@ -1059,8 +1063,8 @@ inline long bresenham_step() {
 		#ifdef DEBUG_OPS
 					//sei();
 					out.println_P(PSTR("DownW"));
-					cli();
 		#endif
+					cli();
 					printer_state.filamentRetracted = false;
 					printer_state.extruderStepsNeeded+=printer_state.opsPushbackSteps;
 				}
@@ -1646,10 +1650,11 @@ inline long bresenham_step() {
 	#ifdef DEBUG_OPS
               //sei();
               OUT_P_LN("DownW");
-              cli();
 	#endif
+              cli();
               printer_state.filamentRetracted = false;
               printer_state.extruderStepsNeeded+=printer_state.opsPushbackSteps;
+              sei();
             }
             if(printer_state.extruderStepsNeeded) {
               cur = 0;
@@ -2085,6 +2090,7 @@ OUT_P_L_LN("MSteps:",cur->stepsRemaining);
         printer_state.advance_executed = advance_target;
 #else
         int tred = mulu6xu16shift16(printer_state.vMaxReached,cur->advanceL);
+        cli();
         printer_state.extruderStepsNeeded+=tred-printer_state.advance_steps_set;
         printer_state.advance_steps_set = tred;
         sei();
@@ -2444,15 +2450,23 @@ ISR(EXTRUDER_TIMER_VECTOR)
   if((printer_state.flag0 & PRINTER_FLAG0_SEPERATE_EXTRUDER_INT)==0) return; // currently no need
   byte timer = EXTRUDER_OCR;
   bool increasing = printer_state.extruderStepsNeeded>0;
-  
-  if(printer_state.extruderStepsNeeded==0) {
+    
+  // Require at least 2 steps in one direction before going to action
+  if(abs(printer_state.extruderStepsNeeded)<2) {
+    EXTRUDER_OCR = timer+printer_state.maxExtruderSpeed;
+            ANALYZER_OFF(ANALYZER_CH2);
+    extruder_last_dir = 0;
+    return;
+  }
+
+/*  if(printer_state.extruderStepsNeeded==0) {
       extruder_last_dir = 0;
   }  else if((increasing>0 && extruder_last_dir<0) || (!increasing && extruder_last_dir>0)) {
     EXTRUDER_OCR = timer+50; // Little delay to accomodate to reversed direction     
     extruder_set_direction(increasing ? 1 : 0);    
     extruder_last_dir = (increasing ? 1 : -1);
     return;
-  } else {
+  } else*/ {
     if(extruder_last_dir==0) {
       extruder_set_direction(increasing ? 1 : 0);    
       extruder_last_dir = (increasing ? 1 : -1);

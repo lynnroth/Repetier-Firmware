@@ -139,15 +139,15 @@ void epr_eeprom_reset() {
   max_acceleration_units_per_sq_second[1] = MAX_ACCELERATION_UNITS_PER_SQ_SECOND_Y;
   max_acceleration_units_per_sq_second[2] = MAX_ACCELERATION_UNITS_PER_SQ_SECOND_Z;
   max_travel_acceleration_units_per_sq_second[0] = MAX_TRAVEL_ACCELERATION_UNITS_PER_SQ_SECOND_X;
-  max_travel_acceleration_units_per_sq_second[1] = MAX_TRAVEL_ACCELERATION_UNITS_PER_SQ_SECOND_X;
-  max_travel_acceleration_units_per_sq_second[2] = MAX_TRAVEL_ACCELERATION_UNITS_PER_SQ_SECOND_X;
+  max_travel_acceleration_units_per_sq_second[1] = MAX_TRAVEL_ACCELERATION_UNITS_PER_SQ_SECOND_Y;
+  max_travel_acceleration_units_per_sq_second[2] = MAX_TRAVEL_ACCELERATION_UNITS_PER_SQ_SECOND_Z;
 #endif
 #if USE_OPS==1
   printer_state.opsMode = OPS_MODE;
   printer_state.opsMinDistance = OPS_MIN_DISTANCE;
   printer_state.opsRetractDistance = OPS_RETRACT_DISTANCE;
   printer_state.opsRetractBacklash = OPS_RETRACT_BACKLASH;
-  printer_state.opsMoveAfter = 0;
+  printer_state.opsMoveAfter = OPS_MOVE_AFTER;
 #endif
 #if HAVE_HEATED_BED
   heatedBedController.heatManager= HEATED_BED_HEAT_MANAGER;
