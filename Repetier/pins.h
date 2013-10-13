@@ -431,9 +431,14 @@ STEPPER_CURRENT_CONTROL
 #define X_MIN_PIN          37
 #define X_MAX_PIN          36   //Max endstops default to disabled "-1"
 
-#define Y_STEP_PIN         54
-#define Y_DIR_PIN          47 
-#define Y_ENABLE_PIN       55
+//#define Y_STEP_PIN         54
+//#define Y_DIR_PIN          47 
+//#define Y_ENABLE_PIN       55
+
+#define Y_STEP_PIN         29
+#define Y_DIR_PIN          28 
+#define Y_ENABLE_PIN       39
+
 #define Y_MIN_PIN          35
 #define Y_MAX_PIN          34 
 
@@ -451,9 +456,9 @@ STEPPER_CURRENT_CONTROL
 #define E1_DIR_PIN         25
 #define E1_ENABLE_PIN      27
 
-#define E2_STEP_PIN        29
-#define E2_DIR_PIN         28
-#define E2_ENABLE_PIN      39
+//#define E2_STEP_PIN        29
+//#define E2_DIR_PIN         28
+//#define E2_ENABLE_PIN      39
 
 #define LED_PIN            13
 
